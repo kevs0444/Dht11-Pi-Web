@@ -1,28 +1,25 @@
-#!/usr/bin/env python3
-"""
-DHT11 Temperature & Humidity Web Monitor for Raspberry Pi
-Requirements: pip install flask adafruit-circuitpython-dht
-Wiring: DHT11 data pin to GPIO 4 (pin 7), VCC to 3.3V, GND to GND
-"""
-
 import time
-import json
 from datetime import datetime
 from flask import Flask, render_template, jsonify
 import board
 import adafruit_dht
 
-# Initialize Flask app
 app = Flask(__name__)
 
-# Initialize DHT11 sensor (connected to GPIO 4)
-dht = adafruit_dht.DHT11(board.D4)
+# Initialize sensor on GPIO4 (Pin 7)
+try:
+    dht = adafruit_dht.DHT11(board.D4)
+except Exception as e:
+    print(f"Failed to initialize DHT11 sensor: {e}")
+    dht = None
 
-# Store recent readings (last 24 hours max)
 sensor_data = []
 
 def read_sensor():
-    """Read temperature and humidity from DHT11"""
+    """Read temperature and humidity from DHT11 sensor."""
+    if dht is None:
+        return {'success': False, 'error': 'Sensor not initialized'}
+
     try:
         temperature = dht.temperature
         humidity = dht.humidity
@@ -34,49 +31,46 @@ def read_sensor():
                 'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                 'success': True
             }
+        else:
+            return {'success': False, 'error': 'Sensor returned None'}
     except RuntimeError as e:
-        # DHT sensors can be finicky, this is normal
-        print(f"Reading error: {e.args[0]}")
-    
-    return {'success': False}
+        # Sensor read errors are common, just return failure
+        return {'success': False, 'error': str(e)}
+    except Exception as e:
+        return {'success': False, 'error': f"Unexpected error: {e}"}
 
 def store_reading(data):
-    """Store sensor reading and maintain history"""
-    if data['success']:
+    """Store sensor data and maintain a max length."""
+    if data.get('success'):
         sensor_data.append(data)
-        # Keep only last 288 readings (24 hours at 5min intervals)
-        if len(sensor_data) > 288:
+        if len(sensor_data) > 288:  # keep last 24 hours (5 min intervals)
             sensor_data.pop(0)
 
 @app.route('/')
 def index():
-    """Main dashboard page"""
     return render_template('index.html')
 
 @app.route('/api/current')
-def get_current():
-    """Get current sensor reading"""
+def current_reading():
     reading = read_sensor()
     store_reading(reading)
     return jsonify(reading)
 
 @app.route('/api/history')
-def get_history():
-    """Get historical data"""
+def history():
     return jsonify(sensor_data)
 
 @app.route('/api/stats')
-def get_stats():
-    """Get basic statistics"""
+def stats():
     if not sensor_data:
         return jsonify({'error': 'No data available'})
-    
-    temps = [d['temperature'] for d in sensor_data if d['success']]
-    humidity_vals = [d['humidity'] for d in sensor_data if d['success']]
-    
-    if not temps:
+
+    temps = [d['temperature'] for d in sensor_data if d.get('success')]
+    humidity_vals = [d['humidity'] for d in sensor_data if d.get('success')]
+
+    if not temps or not humidity_vals:
         return jsonify({'error': 'No valid readings'})
-    
+
     stats = {
         'temperature': {
             'current': temps[-1],
@@ -91,19 +85,15 @@ def get_stats():
             'avg': round(sum(humidity_vals) / len(humidity_vals), 1)
         },
         'readings_count': len(sensor_data),
-        'last_updated': sensor_data[-1]['timestamp'] if sensor_data else None
+        'last_updated': sensor_data[-1]['timestamp']
     }
-    
     return jsonify(stats)
 
 if __name__ == '__main__':
-    print("Starting DHT11 Web Monitor...")
-    print("Wiring: DHT11 data pin -> GPIO 4 (Pin 7)")
-    print("Access at: http://your-pi-ip:5000")
-    
+    print("Starting DHT11 Flask server...")
+    print("Access the API at http://<your_pi_ip>:5000")
     # Take initial reading
     initial = read_sensor()
     store_reading(initial)
     
-    # Run Flask app
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True, threaded=True)
