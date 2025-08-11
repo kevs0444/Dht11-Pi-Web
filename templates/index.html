@@ -1,11 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <title>LED Control</title>
+    <title>Raspberry Pi DHT11 Monitor</title>
+    <meta http-equiv="refresh" content="5">
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        .data { font-size: 24px; margin: 20px; }
+    </style>
 </head>
 <body>
-    <h1>Raspberry Pi LED Control</h1>
-    <button onclick="fetch('/on')">Turn ON</button>
-    <button onclick="fetch('/off')">Turn OFF</button>
+    <h1>DHT11 Sensor Data</h1>
+    <div id="temp" class="data">Temperature: -- °C</div>
+    <div id="hum" class="data">Humidity: -- %</div>
+    <div id="time" class="data">Last updated: --</div>
+
+    <script>
+        async function getData() {
+            const response = await fetch('/data');
+            const json = await response.json();
+            if (!json.error) {
+                document.getElementById('temp').innerText = `Temperature: ${json.temperature} °C`;
+                document.getElementById('hum').innerText = `Humidity: ${json.humidity} %`;
+                document.getElementById('time').innerText = `Last updated: ${json.time}`;
+            } else {
+                document.getElementById('temp').innerText = json.error;
+            }
+        }
+
+        setInterval(getData, 5000); // update every 5 seconds
+        getData();
+    </script>
 </body>
 </html>

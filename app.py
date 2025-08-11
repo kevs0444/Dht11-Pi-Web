@@ -1,26 +1,28 @@
 from flask import Flask, render_template, jsonify
 import Adafruit_DHT
+import time
 
 app = Flask(__name__)
 
-# Sensor setup
+# Sensor settings
 DHT_SENSOR = Adafruit_DHT.DHT11
-DHT_PIN = 4  # GPIO pin number
+DHT_PIN = 4  # GPIO pin where your DHT11 data pin is connected
 
-@app.route("/")
+@app.route('/')
 def index():
-    return render_template("index.html")
+    return render_template('index.html')
 
-@app.route("/data")
+@app.route('/data')
 def data():
     humidity, temperature = Adafruit_DHT.read(DHT_SENSOR, DHT_PIN)
     if humidity is not None and temperature is not None:
         return jsonify({
-            "temperature": round(temperature, 1),
-            "humidity": round(humidity, 1)
+            'temperature': temperature,
+            'humidity': humidity,
+            'time': time.strftime('%H:%M:%S')
         })
     else:
-        return jsonify({"error": "Failed to retrieve data"}), 500
+        return jsonify({'error': 'Failed to retrieve data'})
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)
