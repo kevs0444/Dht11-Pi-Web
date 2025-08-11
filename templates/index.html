@@ -1,35 +1,70 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>DHT11 Monitor</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-        .data { font-size: 24px; margin: 20px; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DHT11 Monitor - Raspberry Pi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>DHT11 Sensor Data</h1>
-    <div id="temp" class="data">Temperature: -- °C</div>
-    <div id="hum" class="data">Humidity: -- %</div>
-    <div id="time" class="data">Last updated: --</div>
+    <div class="container">
+        <h1>🌡️ DHT11 Environment Monitor</h1>
+        
+        <div id="status" class="status offline">
+            🔄 Connecting to sensor...
+        </div>
+        
+        <div class="metrics">
+            <div class="metric-card temp">
+                <div class="metric-icon">🌡️</div>
+                <div id="temperature" class="metric-value">--</div>
+                <div class="metric-label">Temperature (°C)</div>
+            </div>
+            
+            <div class="metric-card humidity">
+                <div class="metric-icon">💧</div>
+                <div id="humidity" class="metric-value">--</div>
+                <div class="metric-label">Humidity (%)</div>
+            </div>
+        </div>
+        
+        <div id="statsSection" style="display: none;">
+            <h2 style="text-align: center; margin-bottom: 20px; color: #333;">📊 Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div id="tempMin" class="stat-value">--</div>
+                    <div class="stat-label">Min Temp (°C)</div>
+                </div>
+                <div class="stat-item">
+                    <div id="tempMax" class="stat-value">--</div>
+                    <div class="stat-label">Max Temp (°C)</div>
+                </div>
+                <div class="stat-item">
+                    <div id="tempAvg" class="stat-value">--</div>
+                    <div class="stat-label">Avg Temp (°C)</div>
+                </div>
+                <div class="stat-item">
+                    <div id="humidityMin" class="stat-value">--</div>
+                    <div class="stat-label">Min Humidity (%)</div>
+                </div>
+                <div class="stat-item">
+                    <div id="humidityMax" class="stat-value">--</div>
+                    <div class="stat-label">Max Humidity (%)</div>
+                </div>
+                <div class="stat-item">
+                    <div id="humidityAvg" class="stat-value">--</div>
+                    <div class="stat-label">Avg Humidity (%)</div>
+                </div>
+            </div>
+        </div>
+        
+        <button id="refreshBtn" class="refresh-btn">🔄 Refresh Data</button>
+        
+        <div id="lastUpdated" class="last-updated">
+            Last updated: Never
+        </div>
+    </div>
 
-    <script>
-        async function getData() {
-            const response = await fetch('/data');
-            const json = await response.json();
-            if (!json.error) {
-                document.getElementById('temp').innerText = `Temperature: ${json.temperature} °C`;
-                document.getElementById('hum').innerText = `Humidity: ${json.humidity} %`;
-                document.getElementById('time').innerText = `Last updated: ${json.time}`;
-            } else {
-                document.getElementById('temp').innerText = json.error;
-                document.getElementById('hum').innerText = '';
-                document.getElementById('time').innerText = '';
-            }
-        }
-
-        setInterval(getData, 5000); // Update every 5 seconds
-        getData();
-    </script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
