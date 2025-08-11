@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Raspberry Pi DHT11 Monitor</title>
-    <meta http-equiv="refresh" content="5">
+    <title>DHT11 Monitor</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
         .data { font-size: 24px; margin: 20px; }
@@ -24,10 +23,12 @@
                 document.getElementById('time').innerText = `Last updated: ${json.time}`;
             } else {
                 document.getElementById('temp').innerText = json.error;
+                document.getElementById('hum').innerText = '';
+                document.getElementById('time').innerText = '';
             }
         }
 
-        setInterval(getData, 5000); // update every 5 seconds
+        setInterval(getData, 5000); // Update every 5 seconds
         getData();
     </script>
 </body>
