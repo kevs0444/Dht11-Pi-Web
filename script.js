@@ -1,13 +1,12 @@
-// Your Firebase config object
 const firebaseConfig = {
-  apiKey: "AIzaSyAGdcT7FLX_OMnw5TSsxCdONMJWthw3Rf0",
-  authDomain: "raspi-dht-dashboard.firebaseapp.com",
-  databaseURL: "https://raspi-dht-dashboard-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "raspi-dht-dashboard",
-  storageBucket: "raspi-dht-dashboard.firebasestorage.app",
-  messagingSenderId: "396378078628",
-  appId: "1:396378078628:web:25b432d525a09615599531",
-  measurementId: "G-3KBFDMWR7R"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
