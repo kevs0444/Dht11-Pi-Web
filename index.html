@@ -1,20 +1,99 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>DHT11 Monitor</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SystemShapers - DHT11 Monitor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <!-- Firebase Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
-<body>
+<body data-theme="light">
+    <!-- Welcome Modal -->
+    <div id="welcomeModal" class="welcome-modal">
+        <div class="welcome-content">
+            <div class="welcome-icon">
+                <i class="fas fa-thermometer-half"></i>
+            </div>
+            <h2 class="welcome-title">Welcome to SystemShapers</h2>
+            <p class="welcome-text">
+                Monitor your environment in real-time with our advanced DHT11 sensor dashboard. 
+                Track temperature and humidity with precision and style.
+            </p>
+            <button class="welcome-button" onclick="closeWelcome()">
+                <i class="fas fa-arrow-right"></i> Enter Dashboard
+            </button>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">
+                <i class="fas fa-microchip"></i>
+                SystemShapers
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <i id="themeIcon" class="fas fa-moon"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
     <div class="container">
-        <h1>DHT11 Sensor Monitor</h1>
-        <p>Temperature: <span id="temperature">--</span></p>
-        <p>Humidity: <span id="humidity">--</span></p>
-        <p id="timestamp">Last updated: --</p>
+        <!-- Hero Section -->
+        <div class="hero">
+            <h1>Environmental Monitor</h1>
+            <p>Real-time temperature and humidity monitoring powered by DHT11 sensor</p>
+            <div id="statusIndicator" class="status-indicator status-offline">
+                <div class="loading"></div>
+                Connecting to sensor...
+            </div>
+        </div>
+
+        <!-- Sensor Cards -->
+        <div class="cards-grid">
+            <div class="sensor-card">
+                <div class="card-header">
+                    <div class="card-icon temperature-icon">
+                        <i class="fas fa-thermometer-half"></i>
+                    </div>
+                    <div class="card-title">Temperature</div>
+                </div>
+                <div class="sensor-value">
+                    <span id="temperature">--</span>
+                    <span class="sensor-unit">°C</span>
+                </div>
+            </div>
+
+            <div class="sensor-card">
+                <div class="card-header">
+                    <div class="card-icon humidity-icon">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <div class="card-title">Humidity</div>
+                </div>
+                <div class="sensor-value">
+                    <span id="humidity">--</span>
+                    <span class="sensor-unit">%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timestamp -->
+        <div class="timestamp-card">
+            <div class="timestamp">
+                <i class="fas fa-clock"></i>
+                <span id="timestamp">Last updated: Connecting...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification">
+        <div id="notificationContent"></div>
     </div>
 
     <script src="script.js"></script>
