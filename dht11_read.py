@@ -9,7 +9,7 @@ from firebase_admin import db
 dht_device = adafruit_dht.DHT11(board.D4)
 
 # Path to your Firebase service account JSON key
-SERVICE_ACCOUNT_PATH = '/home/SystemShapers/Downloads/raspi-dht-dashboard-firebase-adminsdk-fbsvc-03061c83d8.json'  # Change this to where you saved your JSON
+SERVICE_ACCOUNT_PATH = '/home/SystemShapers/Downloads/raspi-dht-dashboard-firebase-adminsdk-fbsvc-03061c83d8.json'
 
 # Your Firebase Realtime Database URL
 DATABASE_URL = 'https://raspi-dht-dashboard-default-rtdb.asia-southeast1.firebasedatabase.app/'
@@ -36,12 +36,19 @@ def push_sensor_data():
         else:
             print("Failed to retrieve sensor data")
     except RuntimeError as error:
-        # Errors happen fairly often with DHT sensors, just retry
         print(f"Runtime error: {error}")
     except Exception as error:
         print(f"Unexpected error: {error}")
 
 if __name__ == '__main__':
-    while True:
-        push_sensor_data()
-        time.sleep(1)  # Push data every 1 second
+    try:
+        while True:
+            push_sensor_data()
+            time.sleep(1)  # Push data every 1 second
+    except KeyboardInterrupt:
+        print("\nStopping script...")
+    finally:
+        print("Cleaning up GPIO...")
+        dht_device.exit()  # Release the DHT11 sensor resources
+        print("GPIO cleanup complete.")
+
